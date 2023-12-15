@@ -74,7 +74,9 @@ public class UserDaoImpl implements UserDao {
     @Override
     public Optional<User> findByUsername(@NonNull String username) {
         try (Session session = sessionFactory.openSession()) {
-            return session.createQuery(GET_BY_USERNAME, User.class).setParameter("username", username).uniqueResultOptional();
+            return session.createQuery(GET_BY_USERNAME, User.class)
+                    .setParameter("username", username)
+                    .uniqueResultOptional();
         } catch (HibernateException e) {
             log.error(e.getMessage());
             return Optional.empty();

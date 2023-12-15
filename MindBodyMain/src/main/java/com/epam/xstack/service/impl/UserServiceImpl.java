@@ -87,16 +87,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Optional<User> login(UserDTO userDTO) {
-        return findByUsername(userDTO.getUsername()).filter(user -> checkPassword(userDTO.getPassword(), user.getPassword()));
+        return findByUsername(userDTO.getUsername()).filter(user -> passwordEncoder.matches(userDTO.getPassword(), user.getPassword()));
     }
 
-    private boolean checkPassword(String plainText, String hashedPassword) {
-        return passwordEncoder.encode(plainText).equals(hashedPassword);
-    }
 
     @Override
     public boolean changePassword(String username, String oldPassword, String newPassword) {
-        return findByUsername(username).filter(user -> checkPassword(oldPassword, user.getPassword()))
+        return userDao.findByUsername(username)
+                .filter(user -> passwordEncoder.matches(oldPassword, user.getPassword()))
                 .map(user -> userDao.updatePassword(username, passwordEncoder.encode(newPassword)))
                 .orElse(false);
     }

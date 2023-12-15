@@ -76,9 +76,7 @@ public class TrainingController {
                     content = @Content(schema = @Schema(implementation = Training.class))),
             @ApiResponse(responseCode = "204", description = "No content found")
     })
-    public ResponseEntity<List<TrainingDTO>> list(@Pattern(regexp = "^[a-zA-Z]+\\.[a-zA-Z]+[0-9]*$", message = "Username is not valid.")
-                                                  @PathVariable("profile") String profile, @RequestBody TrainingFilterDTO filterDTO) {
-
+    public ResponseEntity<List<TrainingDTO>> list(@PathVariable("profile") String profile, @RequestBody @Valid TrainingFilterDTO filterDTO) {
         return trainingService.list(profile.equalsIgnoreCase("trainer"), filterDTO).isEmpty()
                 ? ResponseEntity.noContent().build()
                 : ResponseEntity.ok(trainingService.list(profile.equalsIgnoreCase("trainer"), filterDTO).stream()
