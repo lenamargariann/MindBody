@@ -6,14 +6,13 @@ import com.epam.xstack.model.dto.RequestTraineeDTO;
 import com.epam.xstack.model.dto.TraineeDTO;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface TraineeService extends AbstractService<Trainee> {
-    Optional<Trainee> update(String username, TraineeDTO traineeDTO);
+    Trainee update(String username, TraineeDTO traineeDTO);
 
-    Optional<Trainee> create(RequestTraineeDTO traineeDTO);
+   Trainee create(RequestTraineeDTO traineeDTO);
 
-    boolean deleteByUsername(String username);
+    void deleteByUsername(String username);
 
-    Optional<List<Trainer>> updateTrainers(String username, List<String> names);
+    List<Trainer> updateTrainers(String username, List<String> names);
 }

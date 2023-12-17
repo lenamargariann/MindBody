@@ -2,7 +2,6 @@ package com.epam.xstack.dao;
 
 import com.epam.xstack.model.Training;
 import com.epam.xstack.model.dto.RequestTrainingDTO;
-import com.epam.xstack.model.dto.TrainingDTO;
 import com.epam.xstack.model.dto.TrainingFilterDTO;
 
 import java.util.List;

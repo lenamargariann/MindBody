@@ -14,7 +14,7 @@ public interface UserDao {
 
     Optional<User> findByUsername(String username);
 
-    Object getProfile(String username);
+    Optional<Object> getProfile(String username);
 
     String getValidUsername(String usernamePrototype);
 }

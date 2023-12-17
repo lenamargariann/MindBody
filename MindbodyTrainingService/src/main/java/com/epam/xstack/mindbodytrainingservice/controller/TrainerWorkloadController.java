@@ -1,38 +1,40 @@
 package com.epam.xstack.mindbodytrainingservice.controller;
 
+import com.epam.xstack.mindbodytrainingservice.model.TrainerWorkload;
 import com.epam.xstack.mindbodytrainingservice.model.TrainerWorkloadRequest;
-import com.epam.xstack.mindbodytrainingservice.service.impl.TrainerWorkloadServiceImpl;
+import com.epam.xstack.mindbodytrainingservice.service.TrainerWorkloadService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/workload")
+@RequestMapping("/api/v1/workload")
 @RequiredArgsConstructor
 @Slf4j
+@Validated
 public class TrainerWorkloadController {
 
-    private final TrainerWorkloadServiceImpl trainerWorkloadService;
+    private final TrainerWorkloadService trainerWorkloadService;
 
-
-    @PostMapping
-    public ResponseEntity<?> add(@RequestBody @Valid TrainerWorkloadRequest request) {
-        log.info("Creating workload request: {}", request.toString());
-        if (trainerWorkloadService.create(request) == null) return ResponseEntity.badRequest().build();
-        return ResponseEntity.ok().build();
+    @GetMapping("/{username}")
+    @ResponseStatus(value = HttpStatus.OK)
+    public TrainerWorkload list(@PathVariable("username") String username) {
+        return trainerWorkloadService.list(username);
     }
 
-    @DeleteMapping
-    public ResponseEntity<?> delete(@RequestBody @Valid TrainerWorkloadRequest request) {
-        log.info("Deleting workload: {}", request.toString());
-        return trainerWorkloadService.delete(request) ? ResponseEntity.ok("Successfully deleted!")
-                : ResponseEntity.badRequest().body("Something went wrong!");
+    @PostMapping
+    @ResponseStatus(value = HttpStatus.CREATED)
+    public TrainerWorkload add(@RequestBody @Valid TrainerWorkloadRequest request) {
+        return trainerWorkloadService.create(request);
+    }
 
+
+    @DeleteMapping
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@RequestBody @Valid TrainerWorkloadRequest request) {
+        trainerWorkloadService.delete(request);
     }
 }

@@ -2,22 +2,19 @@ package com.epam.xstack.service.impl;
 
 import com.epam.xstack.dao.TrainerDao;
 import com.epam.xstack.model.Trainer;
-import com.epam.xstack.model.TrainingType;
-import com.epam.xstack.model.User;
 import com.epam.xstack.model.dto.RequestTrainerDTO;
 import com.epam.xstack.model.dto.TrainerDTO;
 import com.epam.xstack.service.TrainerService;
 import com.epam.xstack.service.TrainingTypeService;
 import com.epam.xstack.service.UserService;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -31,31 +28,32 @@ public class TrainerServiceImpl implements TrainerService {
 
     @Override
     @Transactional
-    public Optional<Trainer> create(RequestTrainerDTO trainerDTO) {
-        User user = userService.create(trainerDTO.getFirstname(), trainerDTO.getLastname(), trainerDTO.getPassword());
-        TrainingType trainingType = trainingTypeService.findByName(trainerDTO.getSpecialization())
-                .orElseThrow(() -> new EntityNotFoundException("TrainingType not found"));
-        Trainer trainer = new Trainer(trainingType, user);
-        log.info("Creating trainer for user: {}", user.getUsername());
-        return trainerDao.create(trainer);
+    public Trainer create(RequestTrainerDTO trainerDTO) {
+        return trainingTypeService.findByName(trainerDTO.getSpecialization())
+                .map(trainingType ->
+                        trainerDao.create(new Trainer(trainingType, userService.create(trainerDTO.getFirstname(), trainerDTO.getLastname(), trainerDTO.getPassword())))
+                                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Trainer not found.")))
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Couldn't create trainer"));
+
+
     }
 
     @Override
     @Transactional
-    public Optional<Trainer> update(String username, TrainerDTO trainerDTO) {
+    public Trainer update(String username, TrainerDTO trainerDTO) {
         return trainerDao.findByUsername(username)
-                .map(trainer -> {
-                    TrainingType trainingType = trainingTypeService.findByName(trainerDTO.getSpecialization())
-                            .orElseThrow(() -> new EntityNotFoundException("TrainingType not found for update"));
-                    return trainer.updateFromDTO(trainerDTO, Optional.of(trainingType));
-                })
-                .flatMap(trainerDao::update);
+                .map(trainer -> trainer
+                        .updateFromDTO(trainerDTO, trainingTypeService.findByName(trainerDTO.getSpecialization())
+                                .orElse(null)))
+                .flatMap(trainerDao::update)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Trainer not found."));
     }
 
     @Override
-    public Optional<Trainer> select(String username) {
+    public Trainer select(String username) {
         log.debug("Selecting trainer with username: {}", username);
-        return trainerDao.findByUsername(username);
+        return trainerDao.findByUsername(username)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Trainer not found."));
     }
 
     @Override

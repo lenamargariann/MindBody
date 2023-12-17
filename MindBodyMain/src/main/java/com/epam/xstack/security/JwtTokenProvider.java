@@ -1,6 +1,5 @@
 package com.epam.xstack.security;
 
-import com.epam.xstack.service.impl.CustomUserDetailsService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -17,7 +16,6 @@ import org.springframework.stereotype.Component;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
 @Component
@@ -34,17 +32,6 @@ public class JwtTokenProvider {
     @Value("${jwt.expiration}")
     @Getter
     private long validityInMilliseconds;
-
-    private final Map<String, Long> tokenExpiryMap = new ConcurrentHashMap<>();
-
-    public void blacklistToken(String token, long expiryDate) {
-        tokenExpiryMap.put(token, expiryDate);
-    }
-
-    public boolean isTokenBlacklisted(String token) {
-        Long expiryDate = tokenExpiryMap.get(token);
-        return expiryDate != null && expiryDate > System.currentTimeMillis();
-    }
 
     public String createToken(Authentication authentication) {
         String username = authentication.getName();
@@ -65,7 +52,7 @@ public class JwtTokenProvider {
     }
 
     public boolean validateToken(String token) {
-        return !isTokenExpired(token) && !isTokenBlacklisted(token);
+        return !isTokenExpired(token);
     }
 
     public String getUsernameFromToken(String token) {

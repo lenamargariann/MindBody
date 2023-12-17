@@ -4,7 +4,6 @@ import com.epam.xstack.dao.UserDao;
 import com.epam.xstack.model.Trainee;
 import com.epam.xstack.model.Trainer;
 import com.epam.xstack.model.User;
-import io.micrometer.common.lang.Nullable;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +16,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
 
 @Slf4j
 @Repository
@@ -84,18 +83,14 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    @Nullable
-    public Object getProfile(@NonNull String username) {
+    public Optional<Object> getProfile(@NonNull String username) {
         try (Session session = sessionFactory.openSession()) {
-            var response = new AtomicReference<>(null);
-            session.createQuery(GET_TRAINEE, Trainee.class).setParameter("username", username).uniqueResultOptional()
-                    .ifPresentOrElse(response::set,
-                            () -> session.createQuery(GET_TRAINER, Trainer.class).setParameter("username", username).uniqueResultOptional()
-                                    .ifPresent(response::set));
-            return response.get();
+            return session.createQuery(GET_TRAINEE, Trainee.class).setParameter("username", username).uniqueResultOptional()
+                    .map((Function<Trainee, Object>) trainee -> trainee)
+                    .or(() -> session.createQuery(GET_TRAINER, Trainer.class).setParameter("username", username).uniqueResultOptional());
         } catch (HibernateException hibernateException) {
             log.error(hibernateException.getMessage());
-            return null;
+            throw hibernateException;
         }
     }
 

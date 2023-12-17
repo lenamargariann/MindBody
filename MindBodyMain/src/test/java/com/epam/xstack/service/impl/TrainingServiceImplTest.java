@@ -17,10 +17,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class TrainingServiceImplTest {
 
@@ -61,7 +58,7 @@ public class TrainingServiceImplTest {
 
         when(trainingDao.create(any(Training.class))).thenReturn(Optional.of(new Training()));
 
-        trainingService.create(new Training());
+        trainingService.create("",new Training());
 
         verify(trainingDao, times(1)).create(any(Training.class));
     }
@@ -77,7 +74,7 @@ public class TrainingServiceImplTest {
 
         when(trainingDao.create(any(Training.class))).thenReturn(Optional.empty());
 
-        trainingService.create(new Training());
+        trainingService.create("",new Training());
 
         verify(trainingDao, times(1)).create(any(Training.class));
     }

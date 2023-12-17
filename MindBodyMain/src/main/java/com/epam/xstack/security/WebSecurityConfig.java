@@ -1,13 +1,12 @@
 package com.epam.xstack.security;
 
 import com.epam.xstack.service.impl.CustomUserDetailsService;
-import com.epam.xstack.security.JwtTokenProvider;
-import com.epam.xstack.security.JwtTokenFilter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -36,18 +35,22 @@ public class WebSecurityConfig extends AbstractSecurityWebApplicationInitializer
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests((requests) -> requests.requestMatchers(HttpMethod.POST, "/trainer", "/trainee", "/user/login").permitAll()
+        http.authorizeHttpRequests((requests) -> requests.requestMatchers(HttpMethod.POST, "api/v/trainer", "api/v1/trainee", "api/v1/user/login").permitAll()
                         .anyRequest().authenticated())
-                .httpBasic(AbstractHttpConfigurer::disable)
                 .headers(httpSecurityHeadersConfigurer -> httpSecurityHeadersConfigurer.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
                 .userDetailsService(userDetailsService)
+                .logout(httpSecurityLogoutConfigurer -> {
+                    httpSecurityLogoutConfigurer
+                            .logoutUrl("/api/v1/user/logout")
+                            .deleteCookies("Bearer")
+                            .logoutSuccessHandler((request, response, authentication) -> response.setStatus(HttpStatus.OK.value()));
+                })
                 .addFilterBefore(new JwtTokenFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
                 .sessionManagement(httpSecuritySessionManagementConfigurer -> httpSecuritySessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .cors(httpSecurityCorsConfigurer -> httpSecurityCorsConfigurer.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable);
         return http.build();
     }
-
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {

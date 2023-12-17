@@ -1,9 +1,14 @@
 package com.epam.xstack.mindbodytrainingservice.service;
 
+import com.epam.xstack.mindbodytrainingservice.model.TrainerWorkload;
 import com.epam.xstack.mindbodytrainingservice.model.TrainerWorkloadRequest;
 
-public interface TrainerWorkloadService {
-    TrainerWorkloadRequest create(TrainerWorkloadRequest request);
+import java.util.Optional;
 
-    boolean delete(TrainerWorkloadRequest request);
+public interface TrainerWorkloadService {
+    TrainerWorkload list(String username);
+
+    TrainerWorkload create(TrainerWorkloadRequest request);
+
+    void delete(TrainerWorkloadRequest request);
 }

@@ -3,13 +3,7 @@ package com.epam.xstack.mindbodytrainingservice.model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonValue;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -17,7 +11,6 @@ import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -59,13 +52,13 @@ public class TrainerWorkloadRequest {
     private Integer trainingDuration;
 
     public TrainerWorkload toTrainerWorkload(List<TrainingDateProjection> trainingDateProjection) {
-        TrainerWorkload workload = new TrainerWorkload();
-        workload.setFirstname(firstname);
-        workload.setLastname(lastname);
-        workload.setUsername(username);
-        workload.setStatus(isActive ? "Active" : "Inactive");
-        workload.setWorkload(trainingDateProjection);
-        return workload;
+        return TrainerWorkload.builder()
+                .firstname(firstname)
+                .lastname(lastname)
+                .username(username)
+                .status(isActive ? "Active" : "Inactive")
+                .workload(trainingDateProjection)
+                .build();
     }
 
 }

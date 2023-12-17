@@ -1,7 +1,6 @@
 package com.epam.xstack.dao.impl;
 
 import com.epam.xstack.model.Training;
-import com.epam.xstack.model.dto.TrainerDTO;
 import com.epam.xstack.model.dto.TrainingFilterDTO;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -19,13 +18,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class TrainingDaoImplTest {

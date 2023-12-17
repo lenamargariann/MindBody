@@ -1,11 +1,6 @@
 package com.epam.xstack.test_data;
 
-import com.epam.xstack.model.Role;
-import com.epam.xstack.model.Trainee;
-import com.epam.xstack.model.Trainer;
-import com.epam.xstack.model.Training;
-import com.epam.xstack.model.TrainingType;
-import com.epam.xstack.model.User;
+import com.epam.xstack.model.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

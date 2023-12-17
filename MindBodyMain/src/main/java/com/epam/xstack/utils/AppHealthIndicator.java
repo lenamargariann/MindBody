@@ -1,6 +1,5 @@
 package com.epam.xstack.utils;
 
-import com.epam.xstack.model.Training;
 import com.epam.xstack.model.User;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.HibernateException;

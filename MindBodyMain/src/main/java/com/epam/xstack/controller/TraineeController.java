@@ -1,9 +1,9 @@
 package com.epam.xstack.controller;
 
 import com.epam.xstack.model.Trainee;
-import com.epam.xstack.model.Trainer;
 import com.epam.xstack.model.dto.RequestTraineeDTO;
 import com.epam.xstack.model.dto.TraineeDTO;
+import com.epam.xstack.model.dto.TrainerDTO;
 import com.epam.xstack.service.TraineeService;
 import com.epam.xstack.utils.TraineeMapper;
 import com.epam.xstack.utils.TrainerMapper;
@@ -20,26 +20,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-@RequestMapping("/trainee")
+@RequestMapping("/api/v1/trainee")
 @Tag(name = "TraineeController", description = "Operations pertaining to trainees in the application")
 public class TraineeController {
     private final TraineeService traineeService;
@@ -51,51 +40,42 @@ public class TraineeController {
             @ApiResponse(responseCode = "400", description = "Couldn't create trainee"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    public ResponseEntity<?> register(@Valid @RequestBody RequestTraineeDTO traineeDTO) {
-        return traineeService.create(traineeDTO)
-                .map((Function<Trainee, ResponseEntity<?>>) trainee -> ResponseEntity.status(HttpStatus.CREATED)
-                        .body(Map.of(
-                                "username", trainee.getUser().getUsername(),
-                                "password", trainee.getUser().getPassword()
-                        )
-                )).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Couldn't save trainee."));
+    @ResponseStatus(HttpStatus.CREATED)
+    public Map<String, String> register(@Valid @RequestBody RequestTraineeDTO traineeDTO) {
+        Trainee trainee = traineeService.create(traineeDTO);
+        return Map.of("username", trainee.getUser().getUsername(), "password", trainee.getUser().getPassword());
     }
 
     @GetMapping("/{username}")
     @RolesAllowed(value = "user")
     @Operation(summary = "Get trainee profile by username")
-    public ResponseEntity<?> getProfile(@PathVariable @Pattern(regexp = "^[a-zA-Z]+\\.[a-zA-Z]+[0-9]*$") String username) {
-        Trainee trainee = traineeService.select(username)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Trainee not found"));
-        return ResponseEntity.ok(TraineeMapper.INSTANCE.toDto(trainee));
+    @ResponseStatus(HttpStatus.OK)
+    public TraineeDTO getProfile(@PathVariable @Pattern(regexp = "^[a-zA-Z]+\\.[a-zA-Z]+[0-9]*$") String username) {
+        return TraineeMapper.INSTANCE.toDto(traineeService.select(username));
     }
 
     @PutMapping("/{username}")
     @Operation(summary = "Update trainee profile")
-    public ResponseEntity<?> updateProfile(@PathVariable @Pattern(regexp = "^[a-zA-Z]+\\.[a-zA-Z]+[0-9]*$") String username, @RequestBody TraineeDTO dto) {
-        Trainee trainee = traineeService.update(username, dto)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Trainee not found"));
-        return ResponseEntity.ok(TraineeMapper.INSTANCE.toDto(trainee));
+    @ResponseStatus(HttpStatus.OK)
+    public TraineeDTO updateProfile(@PathVariable @Pattern(regexp = "^[a-zA-Z]+\\.[a-zA-Z]+[0-9]*$") String username, @RequestBody TraineeDTO dto) {
+        return TraineeMapper.INSTANCE.toDto(traineeService.update(username, dto));
     }
 
     @DeleteMapping("/{username}")
     @Operation(summary = "Delete a trainee profile")
-    public ResponseEntity<?> deleteProfile(@PathVariable @Pattern(regexp = "^[a-zA-Z]+\\.[a-zA-Z]+[0-9]*$") String username) {
-        if (!traineeService.deleteByUsername(username)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Trainee not found");
-        }
-        return ResponseEntity.ok().build();
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteProfile(@PathVariable @Pattern(regexp = "^[a-zA-Z]+\\.[a-zA-Z]+[0-9]*$") String username) {
+        traineeService.deleteByUsername(username);
     }
 
     @PutMapping("/{username}/trainers")
     @Operation(summary = "Update trainee's trainers")
-    public ResponseEntity<?> updateTrainers(@PathVariable @Pattern(regexp = "^[a-zA-Z]+\\.[a-zA-Z]+[0-9]*$", message = "Username is not valid.")
-                                            String username,
-                                            @Valid
-                                            @ParameterObject @RequestBody List<@Pattern(regexp = "^[a-zA-Z]+\\.[a-zA-Z]+[0-9]*$", message = "Username is not valid.") String> trainerUsernames) {
-        List<Trainer> updatedTrainers = traineeService.updateTrainers(username, trainerUsernames)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Trainee not found"));
-        return ResponseEntity.ok(TrainerMapper.INSTANCE.toDtoForList(updatedTrainers));
+    @ResponseStatus(HttpStatus.OK)
+    public List<TrainerDTO> updateTrainers(@PathVariable @Pattern(regexp = "^[a-zA-Z]+\\.[a-zA-Z]+[0-9]*$", message = "Username is not valid.")
+                                           String username,
+                                           @Valid
+                                           @ParameterObject @RequestBody List<@Pattern(regexp = "^[a-zA-Z]+\\.[a-zA-Z]+[0-9]*$", message = "Username is not valid.") String> trainerUsernames) {
+        return TrainerMapper.INSTANCE.toDtoForList(traineeService.updateTrainers(username, trainerUsernames));
     }
 }
 

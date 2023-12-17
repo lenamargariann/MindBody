@@ -5,16 +5,15 @@ import com.epam.xstack.model.dto.RequestTrainingDTO;
 import com.epam.xstack.model.dto.TrainingFilterDTO;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface TrainingService {
     List<Training> list(boolean isTrainer, TrainingFilterDTO trainingFilterDTO);
 
-    Optional<Training> create(Training training);
+    Training create(String header, Training training);
 
     void changeTrainer(Training training);
 
-    Optional<Training> get(RequestTrainingDTO trainingDTO);
+    Training get(RequestTrainingDTO trainingDTO);
 
-    boolean delete(RequestTrainingDTO trainingDTO);
+    void delete(String header, RequestTrainingDTO trainingDTO);
 }

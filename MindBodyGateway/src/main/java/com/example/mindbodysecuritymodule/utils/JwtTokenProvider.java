@@ -2,7 +2,6 @@ package com.example.mindbodysecuritymodule.utils;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,9 +13,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
 @Component
@@ -34,37 +30,9 @@ public class JwtTokenProvider {
     @Getter
     private long validityInMilliseconds;
 
-    private final Map<String, Long> tokenExpiryMap = new ConcurrentHashMap<>();
-
-    public void blacklistToken(String token, long expiryDate) {
-        tokenExpiryMap.put(token, expiryDate);
-    }
-
-    public boolean isTokenBlacklisted(String token) {
-        Long expiryDate = tokenExpiryMap.get(token);
-        return expiryDate != null && expiryDate > System.currentTimeMillis();
-    }
-
-    public String createToken(Authentication authentication) {
-        String username = authentication.getName();
-        Map<String, Object> claims = new HashMap<>();
-
-        claims.put("auth", authentication.getAuthorities());
-
-        final Date createdDate = new Date();
-        final Date expirationDate = new Date(createdDate.getTime() + validityInMilliseconds);
-
-        return Jwts.builder()
-                .signWith(SignatureAlgorithm.HS256, secretKey)
-                .setClaims(claims)
-                .setSubject(username)
-                .setIssuedAt(createdDate)
-                .setExpiration(expirationDate)
-                .compact();
-    }
 
     public boolean validateToken(String token) {
-        return !isTokenExpired(token) && !isTokenBlacklisted(token);
+        return !isTokenExpired(token);
     }
 
     public String getUsernameFromToken(String token) {
@@ -76,7 +44,7 @@ public class JwtTokenProvider {
     }
 
     private <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
-         final Claims claims = getAllClaimsFromToken(token);
+        final Claims claims = getAllClaimsFromToken(token);
         return claimsResolver.apply(claims);
     }
 
