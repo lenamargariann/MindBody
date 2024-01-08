@@ -53,16 +53,19 @@ public class TrainerWorkloadServiceImpl implements TrainerWorkloadService {
     }
 
     //FALLBACK
-    public TrainerWorkload createFallback(TrainerWorkloadRequest request, Throwable t) {
+    @Deprecated
+    public TrainerWorkload createFallback(Throwable t) {
         log.error("Creating TrainerWorkLoad failed, fallback method called", t);
         return TrainerWorkload.builder().build();
     }
 
-    public void deleteFallback(TrainerWorkloadRequest request, Throwable t) {
+    @Deprecated
+    public void deleteFallback(Throwable t) {
         log.error("Deleting TrainerWorkLoad failed, fallback method called", t);
     }
 
-    public TrainerWorkload listFallback(String username, Throwable t) {
+    @Deprecated
+    public TrainerWorkload listFallback(Throwable t) {
         log.error(t.getMessage(), t);
         return TrainerWorkload.builder().build();
     }

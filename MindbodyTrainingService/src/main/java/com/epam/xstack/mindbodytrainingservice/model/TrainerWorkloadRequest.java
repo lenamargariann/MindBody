@@ -47,7 +47,7 @@ public class TrainerWorkloadRequest {
     private LocalDateTime trainingDate;
 
     @Min(30)
-    @Max(300)
+    @Max(180)
     @Column(name = "training_duration")
     private Integer trainingDuration;
 

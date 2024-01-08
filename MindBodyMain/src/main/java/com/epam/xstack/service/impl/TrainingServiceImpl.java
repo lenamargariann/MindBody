@@ -13,6 +13,8 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.jms.JmsException;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
@@ -25,7 +27,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 public class TrainingServiceImpl implements TrainingService {
-
+    private final JmsTemplate jmsTemplate;
     private final TrainingDaoImpl trainingDao;
     private final RestTemplate restTemplate;
 
@@ -35,38 +37,35 @@ public class TrainingServiceImpl implements TrainingService {
     }
 
     @Override
-    public Training create(String header, Training training) {
-        return trainingDao.create(training)
-                .map(training1 -> {
-                    postTrainerWorkload(header, training1);
-                    return training1;
-                })
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST));
+    public Training create(Training training) {
+        return trainingDao.create(training).map(training1 -> {
+            postTrainerWorkload(training1);
+            return training1;
+        }).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST));
     }
 
 
     @Override
     public void changeTrainer(Training training) {
-        trainingDao.changeTrainer(training)
-                .ifPresentOrElse(training1 -> System.out.println(training1.getName() + " training updated!"),
-                        () -> System.out.println("Failed to update training's trainer!"));
+        trainingDao.changeTrainer(training).ifPresentOrElse(training1 -> log.info(training1.getName() + " training updated!"), () -> System.out.println("Failed to update training's trainer!"));
 
     }
 
     @Override
     public Training get(RequestTrainingDTO trainingDTO) {
-        return trainingDao.getTraining(trainingDTO)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        return trainingDao.getTraining(trainingDTO).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
     @Override
-    public void delete(String header, RequestTrainingDTO trainingDTO) {
+    public void delete(RequestTrainingDTO trainingDTO) {
         Training training = get(trainingDTO);
         trainingDao.delete(training);
-        deleteTrainerWorkload(header, training);
+        deleteTrainerWorkload(training);
     }
 
+
     @CircuitBreaker(name = "restService", fallbackMethod = "postDeleteFallback")
+    @Deprecated
     private void postTrainerWorkload(String header, Training training) {
         try {
             HttpHeaders headers = new HttpHeaders();
@@ -79,6 +78,7 @@ public class TrainingServiceImpl implements TrainingService {
         }
     }
 
+    @Deprecated
     @CircuitBreaker(name = "restService", fallbackMethod = "postDeleteFallback")
     private void deleteTrainerWorkload(String header, Training training) {
         try {
@@ -92,7 +92,26 @@ public class TrainingServiceImpl implements TrainingService {
         }
     }
 
-    public void postDeleteFallback(String header, Training training, Throwable throwable) {
+    private void deleteTrainerWorkload(Training training) {
+        try {
+            jmsTemplate.convertAndSend("trainer-workload-delete-queue", TrainerWorkloadDTO.fromTraining(training));
+        } catch (JmsException e) {
+            log.error(e.getMessage());
+            throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, e.getMessage());
+        }
+    }
+
+    private void postTrainerWorkload(Training training) {
+        try {
+            jmsTemplate.convertAndSend("trainer-workload-save-queue", TrainerWorkloadDTO.fromTraining(training));
+        } catch (JmsException e) {
+            log.error(e.getMessage());
+            throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, e.getMessage());
+        }
+    }
+
+    @Deprecated
+    public void postDeleteFallback(Throwable throwable) {
         log.error(throwable.getMessage());
         throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
     }

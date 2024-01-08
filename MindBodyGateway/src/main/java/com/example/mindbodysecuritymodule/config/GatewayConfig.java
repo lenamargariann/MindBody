@@ -18,13 +18,16 @@ public class GatewayConfig {
                 .route("training-service-path", r -> r
                         .path("/training-service-path/**")
                         .filters(f -> f
+                                .filter(jwtTokenFilter)
                                 .stripPrefix(1)
-                                .filter(jwtTokenFilter))
+                        )
                         .uri("lb://TRAINING-MINDBODY-SERVICE")
                 )
                 .route("main-service-path", r -> r
                         .path("/main-service-path/**")
-                        .filters(f -> f.stripPrefix(1))
+                        .filters(f -> f
+                                .filter(jwtTokenFilter)
+                                .stripPrefix(1))
                         .uri("lb://MAIN-MINDBODY-SERVICE")
                 )
                 .build();

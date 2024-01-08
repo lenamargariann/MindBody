@@ -9,11 +9,11 @@ import java.util.List;
 public interface TrainingService {
     List<Training> list(boolean isTrainer, TrainingFilterDTO trainingFilterDTO);
 
-    Training create(String header, Training training);
+    Training create(Training training);
 
     void changeTrainer(Training training);
 
     Training get(RequestTrainingDTO trainingDTO);
 
-    void delete(String header, RequestTrainingDTO trainingDTO);
+    void delete(RequestTrainingDTO trainingDTO);
 }

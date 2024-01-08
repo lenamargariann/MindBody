@@ -1,25 +1,36 @@
 package com.epam.xstack.config;
 
+import com.epam.xstack.utils.TrainerWorkloadDTOConverter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.servers.Server;
+import jakarta.jms.ConnectionFactory;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.activemq.ActiveMQConnectionFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.jms.DefaultJmsListenerContainerFactoryConfigurer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
+import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.jms.annotation.EnableJms;
+import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
+import org.springframework.jms.config.JmsListenerContainerFactory;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.orm.hibernate5.HibernateTransactionManager;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.sql.DataSource;
 import java.util.Properties;
-import java.util.Scanner;
 
 @Configuration
+@EnableJms
+@Slf4j
 public class AppConfig {
     @Value("${spring.datasource.url}")
     private String databaseUrl;
@@ -66,11 +77,6 @@ public class AppConfig {
         return mapper;
     }
 
-    @Bean
-    @Lazy
-    public Scanner scanner() {
-        return new Scanner(System.in);
-    }
 
     @Bean
     public OpenAPI openApiInformation() {
@@ -88,6 +94,34 @@ public class AppConfig {
                 .version("V1.0.0");
         return new OpenAPI().info(info).addServersItem(localServer);
 
+    }
+
+    @Bean
+    public ActiveMQConnectionFactory connectionFactory() {
+        ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory();
+        connectionFactory.setBrokerURL("tcp://localhost:61616");
+        connectionFactory.setPassword("admin");
+        connectionFactory.setUserName("admin");
+        return connectionFactory;
+    }
+
+    @Bean
+    public JmsListenerContainerFactory<?> jmsFactory(ConnectionFactory connectionFactory,
+                                                     DefaultJmsListenerContainerFactoryConfigurer configurer) {
+        DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
+        factory.setErrorHandler(t -> {
+            log.error(t.getMessage());
+            throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, t.getMessage());
+        });
+        configurer.configure(factory, connectionFactory);
+        return factory;
+    }
+
+    @Bean
+    public JmsTemplate jmsTemplate() {
+        JmsTemplate jmsTemplate = new JmsTemplate(connectionFactory());
+        jmsTemplate.setMessageConverter(new TrainerWorkloadDTOConverter(objectMapper()));
+        return jmsTemplate;
     }
 
     @Bean

@@ -58,7 +58,7 @@ public class TrainingServiceImplTest {
 
         when(trainingDao.create(any(Training.class))).thenReturn(Optional.of(new Training()));
 
-        trainingService.create("",new Training());
+        trainingService.create(new Training());
 
         verify(trainingDao, times(1)).create(any(Training.class));
     }
@@ -74,7 +74,7 @@ public class TrainingServiceImplTest {
 
         when(trainingDao.create(any(Training.class))).thenReturn(Optional.empty());
 
-        trainingService.create("",new Training());
+        trainingService.create(new Training());
 
         verify(trainingDao, times(1)).create(any(Training.class));
     }

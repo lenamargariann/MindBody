@@ -39,9 +39,9 @@ public class TrainingController {
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @ResponseStatus(value = HttpStatus.CREATED)
-    public TrainingDTO add(@RequestHeader("cookie") String token, @RequestBody @Valid RequestTrainingDTO trainingDTO) {
+    public TrainingDTO add(@RequestBody @Valid RequestTrainingDTO trainingDTO) {
         return TrainingMapper.INSTANCE.toDto(
-                trainingService.create(token.substring(0, token.contains(";") ? token.indexOf(";") - 1 : token.length()).replace("Bearer=", ""),
+                trainingService.create(
                         trainingDTO.toTraining(traineeService.select(trainingDTO.getTraineeUsername()),
                                 trainerService.select(trainingDTO.getTrainerUsername()))
                 ));
@@ -54,8 +54,8 @@ public class TrainingController {
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     @ResponseStatus(value = HttpStatus.NO_CONTENT, reason = "Training session deleted.")
-    public void delete(@RequestHeader("cookie") String token, @RequestBody @Valid RequestTrainingDTO trainingDTO) {
-        trainingService.delete(token.substring(0, token.contains(";") ? token.indexOf(";") - 1 : token.length()).replace("Bearer=", ""), trainingDTO);
+    public void delete(@RequestBody @Valid RequestTrainingDTO trainingDTO) {
+        trainingService.delete(trainingDTO);
     }
 
     @GetMapping("/{profile}/list")
