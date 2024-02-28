@@ -1,6 +1,7 @@
 package com.epam.xstack.service.impl;
 
 import com.epam.xstack.dao.impl.UserDaoImpl;
+import com.epam.xstack.model.Role;
 import com.epam.xstack.model.User;
 import com.epam.xstack.service.UserService;
 import jakarta.annotation.Nonnull;
@@ -21,9 +22,9 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public User create(@Nonnull String firstname, @Nonnull String lastname, @NonNull String password) {
+    public User create(@Nonnull String firstname, @Nonnull String lastname, @NonNull String password, @NonNull Role role) {
         String username = generateUniqueUsername(firstname, lastname);
-        return new User(firstname, lastname, username, passwordEncoder.encode(password));
+        return new User(firstname, lastname, username, passwordEncoder.encode(password), role);
     }
 
     private String generateUniqueUsername(String firstname, String lastname) {
@@ -57,6 +58,12 @@ public class UserServiceImpl implements UserService {
                 .map(user -> userDao.updatePassword(username, passwordEncoder.encode(newPassword)))
                 .filter(aBoolean -> aBoolean)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Password change failed"));
+    }
+
+    @Override
+    public Role getRole(String username) {
+        return userDao.getUserRole(username)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to get user role"));
     }
 
 }

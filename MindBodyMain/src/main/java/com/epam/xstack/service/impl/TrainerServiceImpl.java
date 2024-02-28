@@ -1,6 +1,7 @@
 package com.epam.xstack.service.impl;
 
 import com.epam.xstack.dao.TrainerDao;
+import com.epam.xstack.model.Role;
 import com.epam.xstack.model.Trainer;
 import com.epam.xstack.model.dto.RequestTrainerDTO;
 import com.epam.xstack.model.dto.TrainerDTO;
@@ -31,7 +32,7 @@ public class TrainerServiceImpl implements TrainerService {
     public Trainer create(RequestTrainerDTO trainerDTO) {
         return trainingTypeService.findByName(trainerDTO.getSpecialization())
                 .map(trainingType ->
-                        trainerDao.create(new Trainer(trainingType, userService.create(trainerDTO.getFirstname(), trainerDTO.getLastname(), trainerDTO.getPassword())))
+                        trainerDao.create(new Trainer(trainingType, userService.create(trainerDTO.getFirstname(), trainerDTO.getLastname(), trainerDTO.getPassword(), Role.TRAINER)))
                                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Trainer not found.")))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Couldn't create trainer"));
 
@@ -59,6 +60,14 @@ public class TrainerServiceImpl implements TrainerService {
     @Override
     public List<Trainer> listNotAssigned() {
         return trainerDao.listNotAssigned();
+    }
+
+    @Transactional
+    @Override
+    public void deleteByUsername(String username) {
+        trainerDao.findByUsername(username)
+                .map(trainerDao::delete)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Trainer not found."));
     }
 
 }

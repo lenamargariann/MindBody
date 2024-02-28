@@ -47,7 +47,6 @@ public class TraineeController {
     }
 
     @GetMapping("/{username}")
-    @RolesAllowed(value = "user")
     @Operation(summary = "Get trainee profile by username")
     @ResponseStatus(HttpStatus.OK)
     public TraineeDTO getProfile(@PathVariable @Pattern(regexp = "^[a-zA-Z]+\\.[a-zA-Z]+[0-9]*$") String username) {
@@ -63,7 +62,7 @@ public class TraineeController {
 
     @DeleteMapping("/{username}")
     @Operation(summary = "Delete a trainee profile")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseStatus(value = HttpStatus.NO_CONTENT,reason = "Trainee deleted!")
     public void deleteProfile(@PathVariable @Pattern(regexp = "^[a-zA-Z]+\\.[a-zA-Z]+[0-9]*$") String username) {
         traineeService.deleteByUsername(username);
     }

@@ -1,5 +1,6 @@
 package com.epam.xstack.controller;
 
+import com.epam.xstack.model.Role;
 import com.epam.xstack.model.dto.PasswordChangeDTO;
 import com.epam.xstack.model.dto.UserDTO;
 import com.epam.xstack.security.JwtTokenProvider;
@@ -25,6 +26,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
+
 @RestController
 @RequestMapping("/api/v1/user")
 @RequiredArgsConstructor
@@ -46,7 +49,8 @@ public class UserController {
     public String login(HttpServletResponse response, HttpServletRequest request, @RequestBody UserDTO userDTO) {
         if (loginAttemptService.isBlocked(request))
             throw new AccessDeniedException("Exceeded login attempts.Try again in 5 minutes.");
-
+        String role = userService.getRole(userDTO.getUsername()).name();
+        System.out.println("ROLE - " + role);
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(userDTO.getUsername(), userDTO.getPassword())
         );

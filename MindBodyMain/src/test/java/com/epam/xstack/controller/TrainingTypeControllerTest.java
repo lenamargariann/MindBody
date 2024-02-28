@@ -1,21 +1,13 @@
 package com.epam.xstack.controller;
 
-import com.epam.xstack.model.TrainingType;
 import com.epam.xstack.service.TrainingTypeService;
-import com.epam.xstack.test_data.TestStorage;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.http.HttpStatus;
-
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.Mockito.*;
 
 public class TrainingTypeControllerTest {
 

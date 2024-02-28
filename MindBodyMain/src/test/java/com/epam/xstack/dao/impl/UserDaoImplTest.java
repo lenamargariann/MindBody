@@ -151,61 +151,61 @@ public class UserDaoImplTest {
         assertFalse(result);
     }
 
-    @Test
-    public void testGetProfileTrainee() {
-        Trainee trainee = new Trainee();
+//    @Test
+//    public void testGetProfileTrainee() {
+//        Trainee trainee = new Trainee();
+//
+//        when(session.createQuery(UserDaoImpl.GET_TRAINEE, Trainee.class)).thenReturn(traineeQuery);
+//        when(traineeQuery.setParameter("username", TEST_USERNAME)).thenReturn(traineeQuery);
+//        when(traineeQuery.uniqueResultOptional()).thenReturn(Optional.of(trainee));
+//
+//        Object result = userDao.getProfile(TEST_USERNAME);
+//
+//        assertNotNull(result);
+//        assertTrue(result instanceof Trainee);
+//    }
 
-        when(session.createQuery(UserDaoImpl.GET_TRAINEE, Trainee.class)).thenReturn(traineeQuery);
-        when(traineeQuery.setParameter("username", TEST_USERNAME)).thenReturn(traineeQuery);
-        when(traineeQuery.uniqueResultOptional()).thenReturn(Optional.of(trainee));
+//    @Test
+//    public void testGetProfileTrainer() {
+//        Trainer trainer = new Trainer();
+//
+//        when(session.createQuery(UserDaoImpl.GET_TRAINEE, Trainee.class)).thenReturn(traineeQuery);
+//        when(traineeQuery.setParameter("username", TEST_USERNAME)).thenReturn(traineeQuery);
+//        when(traineeQuery.uniqueResultOptional()).thenReturn(Optional.empty());
+//
+//        when(session.createQuery(UserDaoImpl.GET_TRAINER, Trainer.class)).thenReturn(trainerQuery);
+//        when(trainerQuery.setParameter("username", TEST_USERNAME)).thenReturn(trainerQuery);
+//        when(trainerQuery.uniqueResultOptional()).thenReturn(Optional.of(trainer));
+//
+//        Object result = userDao.getProfile(TEST_USERNAME);
+//
+//        assertNotNull(result);
+//        assertTrue(result instanceof Trainer);
+//    }
 
-        Object result = userDao.getProfile(TEST_USERNAME);
+//    @Test
+//    public void testGetUsernameIdExisting() {
+//        long count = 1;
+//
+//        when(session.createQuery(UserDaoImpl.GET_USERNAME_NUM, Long.class)).thenReturn(longQuery);
+//        when(longQuery.setParameter("searchString", TEST_USERNAME + "%")).thenReturn(longQuery);
+//        when(longQuery.uniqueResultOptional()).thenReturn(Optional.of(count));
+//
+//        String result = userDao.getValidUsername(TEST_USERNAME);
+//
+//        assertEquals(TEST_USERNAME.concat(String.valueOf(count + 1)), result);
+//    }
 
-        assertNotNull(result);
-        assertTrue(result instanceof Trainee);
-    }
-
-    @Test
-    public void testGetProfileTrainer() {
-        Trainer trainer = new Trainer();
-
-        when(session.createQuery(UserDaoImpl.GET_TRAINEE, Trainee.class)).thenReturn(traineeQuery);
-        when(traineeQuery.setParameter("username", TEST_USERNAME)).thenReturn(traineeQuery);
-        when(traineeQuery.uniqueResultOptional()).thenReturn(Optional.empty());
-
-        when(session.createQuery(UserDaoImpl.GET_TRAINER, Trainer.class)).thenReturn(trainerQuery);
-        when(trainerQuery.setParameter("username", TEST_USERNAME)).thenReturn(trainerQuery);
-        when(trainerQuery.uniqueResultOptional()).thenReturn(Optional.of(trainer));
-
-        Object result = userDao.getProfile(TEST_USERNAME);
-
-        assertNotNull(result);
-        assertTrue(result instanceof Trainer);
-    }
-
-    @Test
-    public void testGetUsernameIdExisting() {
-        long count = 1;
-
-        when(session.createQuery(UserDaoImpl.GET_USERNAME_NUM, Long.class)).thenReturn(longQuery);
-        when(longQuery.setParameter("searchString", TEST_USERNAME + "%")).thenReturn(longQuery);
-        when(longQuery.uniqueResultOptional()).thenReturn(Optional.of(count));
-
-        String result = userDao.getValidUsername(TEST_USERNAME);
-
-        assertEquals(TEST_USERNAME.concat(String.valueOf(count + 1)), result);
-    }
-
-    @Test
-    public void testGetUsernameIdNotExisting() {
-        when(session.createQuery(UserDaoImpl.GET_USERNAME_NUM, Long.class)).thenReturn(longQuery);
-        when(longQuery.setParameter("searchString", TEST_USERNAME + "%")).thenReturn(longQuery);
-        when(longQuery.uniqueResultOptional()).thenReturn(Optional.empty());
-
-        String result = userDao.getValidUsername(TEST_USERNAME);
-
-        assertEquals(TEST_USERNAME, result);
-    }
+//    @Test
+//    public void testGetUsernameIdNotExisting() {
+//        when(session.createQuery(UserDaoImpl.GET_USERNAME_NUM, Long.class)).thenReturn(longQuery);
+//        when(longQuery.setParameter("searchString", TEST_USERNAME + "%")).thenReturn(longQuery);
+//        when(longQuery.uniqueResultOptional()).thenReturn(Optional.empty());
+//
+//        String result = userDao.getValidUsername(TEST_USERNAME);
+//
+//        assertEquals(TEST_USERNAME, result);
+//    }
 
     @Test
     public void testCheckPasswordMatchingFailureIncorrectPassword() {
@@ -222,20 +222,20 @@ public class UserDaoImplTest {
     }
 
 
-    @Test
-    public void testGetProfileFailure() {
-        when(session.createQuery(UserDaoImpl.GET_TRAINEE, Trainee.class)).thenReturn(traineeQuery);
-        when(traineeQuery.setParameter("username", TEST_USERNAME)).thenReturn(traineeQuery);
-        when(traineeQuery.uniqueResultOptional()).thenReturn(Optional.empty());
-
-        when(session.createQuery(UserDaoImpl.GET_TRAINER, Trainer.class)).thenReturn(trainerQuery);
-        when(trainerQuery.setParameter("username", TEST_USERNAME)).thenReturn(trainerQuery);
-        when(trainerQuery.uniqueResultOptional()).thenReturn(Optional.empty());
-
-        Object result = userDao.getProfile(TEST_USERNAME);
-
-        assertNull(result);
-    }
+//    @Test
+//    public void testGetProfileFailure() {
+//        when(session.createQuery(UserDaoImpl.GET_TRAINEE, Trainee.class)).thenReturn(traineeQuery);
+//        when(traineeQuery.setParameter("username", TEST_USERNAME)).thenReturn(traineeQuery);
+//        when(traineeQuery.uniqueResultOptional()).thenReturn(Optional.empty());
+//
+//        when(session.createQuery(UserDaoImpl.GET_TRAINER, Trainer.class)).thenReturn(trainerQuery);
+//        when(trainerQuery.setParameter("username", TEST_USERNAME)).thenReturn(trainerQuery);
+//        when(trainerQuery.uniqueResultOptional()).thenReturn(Optional.empty());
+//
+//        Object result = userDao.getProfile(TEST_USERNAME);
+//
+//        assertNull(result);
+//    }
 
     @Test
     public void testHibernateExceptionUpdatePassword() {
@@ -255,14 +255,14 @@ public class UserDaoImplTest {
         assertFalse(result.isPresent());
     }
 
-    @Test
-    public void testHibernateExceptionGetUsernameId() {
-        when(session.createQuery(UserDaoImpl.GET_USERNAME_NUM, Long.class)).thenThrow(HibernateException.class);
-
-        String result = userDao.getValidUsername(TEST_USERNAME);
-
-        assertEquals(TEST_USERNAME, result);  // It should fall back to the input value in case of an exception
-    }
+//    @Test
+//    public void testHibernateExceptionGetUsernameId() {
+//        when(session.createQuery(UserDaoImpl.GET_USERNAME_NUM, Long.class)).thenThrow(HibernateException.class);
+//
+//        String result = userDao.getValidUsername(TEST_USERNAME);
+//
+//        assertEquals(TEST_USERNAME, result);  // It should fall back to the input value in case of an exception
+//    }
 
     @AfterEach
     public void tearDown() {

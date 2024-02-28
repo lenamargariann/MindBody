@@ -1,8 +1,10 @@
 package com.epam.xstack.model;
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -32,12 +34,14 @@ public class Training {
     @JoinColumn(name = "type_id")
     private TrainingType type;
     @NonNull
-//    @Temporal(TemporalType.TIMESTAMP)
+    @JsonFormat(pattern = "dd-MM-yyyy HH:mm")
+     @DateTimeFormat(pattern = "dd-MM-yyyy HH:mm")
     @Column(name = "date")
     private LocalDateTime date;
     @NonNull
     @Column(name = "duration")
     private Integer duration;
+
     @Override
     public String toString() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");

@@ -1,6 +1,7 @@
 package com.epam.xstack.service.impl;
 
 import com.epam.xstack.dao.TraineeDao;
+import com.epam.xstack.model.Role;
 import com.epam.xstack.model.Trainee;
 import com.epam.xstack.model.Trainer;
 import com.epam.xstack.model.dto.RequestTraineeDTO;
@@ -45,7 +46,7 @@ public class TraineeServiceImpl implements TraineeService {
                 traineeDao.create(new Trainee(
                                 traineeDTO.getDateOfBirth(),
                                 traineeDTO.getAddress(),
-                                userService.create(traineeDTO.getFirstname(), traineeDTO.getLastname(), traineeDTO.getPassword())))
+                                userService.create(traineeDTO.getFirstname(), traineeDTO.getLastname(), traineeDTO.getPassword(), Role.TRAINEE)))
                         .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST));
 
     }
@@ -53,7 +54,7 @@ public class TraineeServiceImpl implements TraineeService {
     @Override
     public Trainee select(String username) {
         return traineeDao.findByUsername(username)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Trainee not found."));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Trainee not found."));
     }
 
     @Override
@@ -61,12 +62,11 @@ public class TraineeServiceImpl implements TraineeService {
     public void deleteByUsername(String username) {
         traineeDao.findByUsername(username)
                 .map(traineeDao::delete)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Trainee not found."));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Trainee not found."));
     }
 
     @Override
     @Transactional
-
     public List<Trainer> updateTrainers(String username, List<String> names) {
         return traineeDao.findByUsername(username)
                 .map(trainee -> {
@@ -79,7 +79,7 @@ public class TraineeServiceImpl implements TraineeService {
                     traineeDao.update(trainee);
                     return trainers;
                 })
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Trainee not found."));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Trainee not found."));
     }
 }
 

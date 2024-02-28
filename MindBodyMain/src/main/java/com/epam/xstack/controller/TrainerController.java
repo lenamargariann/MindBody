@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -67,6 +68,13 @@ public class TrainerController {
     @ResponseStatus(HttpStatus.OK)
     public List<TrainerDTO> listNotAssigned() {
         return TrainerMapper.INSTANCE.toDtoForList(trainerService.listNotAssigned());
+    }
+
+    @DeleteMapping("/{username}")
+    @Operation(summary = "Delete a trainer profile")
+    @ResponseStatus(value = HttpStatus.NO_CONTENT, reason = "Trainer deleted!")
+    public void deleteProfile(@PathVariable @Pattern(regexp = "^[a-zA-Z]+\\.[a-zA-Z]+[0-9]*$") String username) {
+        trainerService.deleteByUsername(username);
     }
 }
 

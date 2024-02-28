@@ -1,6 +1,7 @@
 package com.epam.xstack.dao.impl;
 
 import com.epam.xstack.dao.UserDao;
+import com.epam.xstack.model.Role;
 import com.epam.xstack.model.Trainee;
 import com.epam.xstack.model.Trainer;
 import com.epam.xstack.model.User;
@@ -24,6 +25,7 @@ import java.util.function.Function;
 public class UserDaoImpl implements UserDao {
     static final String UPDATE_PASSWORD = "UPDATE user_account u SET u.password = :password WHERE u.username = :username";
     static final String GET_BY_USERNAME = "SELECT u FROM user_account u WHERE u.username = :username";
+    static final String GET_ROLE_BY_USERNAME = "SELECT u.role FROM user_account u WHERE u.username = :username";
     static final String ACTIVATE = "UPDATE user_account u SET isActive = :isActive WHERE u.username = :username";
     static final String GET_TRAINER = "SELECT t FROM trainer t WHERE t.user.username = :username";
     static final String GET_TRAINEE = "SELECT t FROM trainee t WHERE t.user.username = :username";
@@ -117,6 +119,17 @@ public class UserDaoImpl implements UserDao {
         return username;
 
     }
+
+    @Override
+    public Optional<Role> getUserRole(String username) {
+        try (Session session = sessionFactory.openSession()) {
+            return session.createQuery(GET_ROLE_BY_USERNAME, Role.class)
+                    .setParameter("username", username)
+                    .uniqueResultOptional();
+        } catch (HibernateException e) {
+            log.error(e.getMessage());
+            return Optional.empty();
+        }    }
 
 
 }

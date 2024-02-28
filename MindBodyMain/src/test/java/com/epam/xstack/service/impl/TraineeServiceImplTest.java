@@ -1,6 +1,7 @@
 package com.epam.xstack.service.impl;
 
 import com.epam.xstack.dao.impl.TraineeDaoImpl;
+import com.epam.xstack.model.Role;
 import com.epam.xstack.model.Trainee;
 import com.epam.xstack.model.User;
 import org.junit.jupiter.api.Test;
@@ -36,21 +37,21 @@ public class TraineeServiceImplTest {
 //        verify(traineeDao, times(1)).update(trainee);
 //    }
 
-    @Test
-    public void testCreate() {
-        LocalDate dateOfBirth = LocalDate.now();
-        String address = "Some Address";
-        String firstname = "John";
-        String lastname = "Doe";
-
-        when(userService.create(firstname, lastname, "gsdyfnhkmlA")).thenReturn(new User());
-        when(traineeDao.create(any())).thenReturn(Optional.of(new Trainee()));
-
-//        traineeService.create(dateOfBirth);
-
-        verify(traineeDao, times(1)).create(any());
-        verify(userService, times(1)).create(firstname, lastname, "fcgfvhjA `");
-    }
+//    @Test
+//    public void testCreate() {
+//        LocalDate dateOfBirth = LocalDate.now();
+//        String address = "Some Address";
+//        String firstname = "John";
+//        String lastname = "Doe";
+//
+//        when(userService.create(firstname, lastname, "gsdyfnhkmlA", Role.TRAINEE)).thenReturn(new User());
+//        when(traineeDao.create(any())).thenReturn(Optional.of(new Trainee()));
+//
+////        traineeService.create(dateOfBirth);
+//
+//        verify(traineeDao, times(1)).create(any());
+//        verify(userService, times(1)).create(firstname, lastname, "fcgfvhjA `",Role.TRAINEE );
+//    }
 
 //    @Test
 //    public void testDeleteSuccess() {

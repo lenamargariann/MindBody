@@ -65,6 +65,20 @@ public class TrainerDaoImpl implements TrainerDao {
         }
     }
 
+    @Override
+    public boolean delete(@NonNull Trainer trainer) {
+        try (Session session = sessionFactory.openSession()) {
+            Transaction tr = session.beginTransaction();
+            session.remove(trainer);
+            tr.commit();
+            return true;
+        } catch (HibernateException e) {
+            log.error(e.getMessage());
+            return false;
+        }
+
+    }
+
 
     @Override
     public List<Trainer> listNotAssigned() {

@@ -30,9 +30,9 @@ public class User {
     private String password;
     @Column(name = "is_active")
     private boolean isActive;
-
-    @Column(columnDefinition = "varchar(255) default 'user'")
+    @NonNull
+    @Column(columnDefinition = "varchar(255) default 'TRAINEE'", name = "role")
     @Enumerated(value = EnumType.STRING)
-    private Role role = Role.user;
+    private Role role;
 
 }

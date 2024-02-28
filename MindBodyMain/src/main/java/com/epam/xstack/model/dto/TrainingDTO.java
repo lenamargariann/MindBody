@@ -26,8 +26,8 @@ public class TrainingDTO {
     private String name;
 
     @NotNull(message = "Training date is required")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm")
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE, pattern = "dd-MM-yyyy hh:mm")
+    @JsonFormat(pattern = "dd-MM-yyyy HH:mm")
+    @DateTimeFormat(pattern = "dd-MM-yyyy HH:mm")
     private LocalDateTime date;
 
     @NotNull(message = "Training duration is required")

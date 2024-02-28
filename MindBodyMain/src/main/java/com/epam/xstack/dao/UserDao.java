@@ -1,5 +1,6 @@
 package com.epam.xstack.dao;
 
+import com.epam.xstack.model.Role;
 import com.epam.xstack.model.User;
 import lombok.NonNull;
 
@@ -17,4 +18,6 @@ public interface UserDao {
     Optional<Object> getProfile(String username);
 
     String getValidUsername(String usernamePrototype);
+
+    Optional<Role> getUserRole(String username);
 }

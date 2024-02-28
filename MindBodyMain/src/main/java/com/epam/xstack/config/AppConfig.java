@@ -38,6 +38,12 @@ public class AppConfig {
     private String username;
     @Value("${spring.datasource.password}")
     private String password;
+    @Value("${spring.activemq.broker-url}")
+    private String brokerUrl;
+    @Value("${spring.activemq.user}")
+    private String activeMQUsername;
+    @Value("${spring.activemq.password}")
+    private String activeMQPassword;
 
 
     @Bean
@@ -99,9 +105,9 @@ public class AppConfig {
     @Bean
     public ActiveMQConnectionFactory connectionFactory() {
         ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory();
-        connectionFactory.setBrokerURL("tcp://localhost:61616");
-        connectionFactory.setPassword("admin");
-        connectionFactory.setUserName("admin");
+        connectionFactory.setBrokerURL(brokerUrl);
+        connectionFactory.setUserName(activeMQUsername);
+        connectionFactory.setPassword(activeMQPassword);
         return connectionFactory;
     }
 

@@ -58,14 +58,15 @@ public class TrainingController {
         trainingService.delete(trainingDTO);
     }
 
-    @GetMapping("/{profile}/list")
+    @PostMapping("/{profile}/list")
     @Operation(summary = "List training sessions based on profile", responses = {
             @ApiResponse(responseCode = "200", description = "Successfully retrieved list",
                     content = @Content(schema = @Schema(implementation = Training.class))),
             @ApiResponse(responseCode = "204", description = "No content found")
     })
     @ResponseStatus(HttpStatus.OK)
-    public List<TrainingDTO> list(@PathVariable("profile") String profile, @RequestBody @Valid TrainingFilterDTO filterDTO) {
+    public List<TrainingDTO> list(@PathVariable("profile") String profile,
+                                  @RequestBody @Valid TrainingFilterDTO filterDTO) {
         return trainingService.list(profile.equalsIgnoreCase("trainer"), filterDTO).stream()
                 .map(TrainingMapper.INSTANCE::toDto)
                 .toList();
